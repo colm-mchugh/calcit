@@ -5,6 +5,7 @@ List *createList() {
 	List *new_list = (List*)malloc(sizeof(List));
 	new_list->head = NULL;
 	new_list->tail = NULL;
+	new_list->num_nodes = 0;
 	return new_list;
 }
 
@@ -12,24 +13,92 @@ ListNode *createListNode(void *data) {
 	ListNode *new_node = (ListNode*)malloc(sizeof(ListNode));
 	new_node->data = data;
 	new_node->next = NULL;
+	new_node->prev = NULL;
 	return new_node;
 }
 
-void appendTo(List *list, void *data) {
+void deleteList(List*) {
+	// TODO - free memory allocated for the List
+}
+
+int list_size(List *list) {
+	return list->num_nodes;
+}
+
+// Add data to the START of the list
+void prependTo(List *list, void *data) {
 	ListNode *new_node = createListNode(data);
 	if (list->head == NULL) {
 		list->tail = new_node;
+	} else {
+		new_node->next = list->head;
+		list->head->prev = new_node;
 	}
-	new_node->next = list->head;
 	list->head = new_node;
+	list->num_nodes++;
 }
 
-void prependTo(List *list, void *data) {
+// Add data to the END of the list
+void appendTo(List *list, void *data) {
 	ListNode *new_node = createListNode(data);
 	if (list->head == NULL) {
 		list->head = new_node;
 	} else {
 		list->tail->next = new_node;
+		new_node->prev = list->tail;
 	}
 	list->tail = new_node;
+	list->num_nodes++;
 }
+
+// get element at index (0-indexed)
+void *getElement(List *list, int index) {
+	if (index >= list->num_nodes) {
+		return NULL;
+	}
+	int i = 0;
+	ListNode *n = list->head;
+	while (i++ < index) {
+		n = n->next;
+	}
+	return n->data;
+}
+
+// get first element matching comp_op
+void *getMatch(List *list, compare comp_op, void *data) {
+	int i = 0;
+	ListNode *n = list->head;
+	while ((n != NULL) && !comp_op(n->data, data) ) {
+		n = n->next;
+	}
+	return (n != NULL? n->data : NULL);
+}
+
+// remove element at index (0-indexed)
+void *removeElement(List *list, int index) {
+	void *data = NULL;
+	if (index >= list->num_nodes) {
+		return data;
+	}
+	ListNode *element = NULL;
+	int i = 0;
+	element = list->head;
+	while (i++ < index) {
+		element = element->next;
+	}
+	if (element->prev == NULL) {
+		list->head = element->next;
+	} else {
+		element->prev->next = element->next;
+	}
+	if (element->next == NULL) {
+		list->tail = element->prev;
+	} else {
+		element->next->prev = element->prev;
+	}
+	data = element->data;
+	free(element);
+	list->num_nodes--;
+	return data;
+}
+		

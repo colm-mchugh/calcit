@@ -1,6 +1,7 @@
 #include "nodes.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 Node *allocateNodeMemory(NodeTag node_tag) {
 	Node *new_node;
@@ -71,14 +72,42 @@ AssignNode *makeAssignNode(IdentNode* id, Node* val) {
 void displayNode(Node *node) {
 	switch (node->type) {
 		case T_ASSIGN: 
+				displayAssignNode((AssignNode*)node);
 					break;
 		case T_EXPR: 
+				displayExprNode((ExprNode*)node);
 					break;
 		case T_IDENT: 
+				displayIdentNode((IdentNode*)node);
 					break;
 		case T_FLT_CONST: 
+				displayFltNode((FltNode*)node);
 					break;
 		case T_INT_CONST: 
+				displayIntNode((IntNode*)node);
 					break;
 	}
+}
+
+void displayIntNode(IntNode* node) {
+	printf(" [T_INT_CONST:%d] ", node->value);
+}
+void displayFltNode(FltNode* node) {
+	printf(" [T_FLT_CONST:%f] ", node->value);
+}
+
+void displayIdentNode(IdentNode* node) {
+	printf(" [T_IDENT:%s] ", node->identifier);
+}
+
+void displayExprNode(ExprNode* node) {
+	displayNode(node->left);
+	displayNode(node->right);
+	printf(" [T_EXPR:%c] ", node->opcode);
+}
+
+void displayAssignNode(AssignNode* node) {
+	displayIdentNode(node->target);
+	printf(" [T_ASSIGN] ");
+	displayNode(node->value);
 }

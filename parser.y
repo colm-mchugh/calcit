@@ -39,20 +39,19 @@ void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 %%
 
 program: assignments expr
-		{ prependTo($1, $2); 
-		  $$ = $1; parse_list = $$; 
-		  printf("parsed program\n");}
+		{ 
+		  appendTo($1, $2); 
+		  $$ = $1;
+		  parse_list = $$; 
+		  printf("parsed program\n");
+		}
 		;
 
-assignments:	{ $$ = NULL; }
+assignments:	{ $$ = createList(); }
 			|	assignments assignment 
-				{ if($1 == NULL) {
-					$$ = createList();
-					appendTo($$, $2);
-				  } else {
-				    appendTo($1, $2);
-					$$ = $1;
-				  }
+				{ 
+				  appendTo($1, $2);
+				  $$ = $1;
 				  printf("parsed assignments\n");
 				}
 			;

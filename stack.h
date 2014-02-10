@@ -4,7 +4,7 @@
 
 typedef List Stack;
 
-Stack *initStack();
+Stack *createStack();
 
 void deleteStack(Stack*);
 

@@ -1,7 +1,7 @@
 #include "stack.h"
 
 
-Stack *initStack() {
+Stack *createStack() {
 	Stack *new_stack = createList();
 }
 

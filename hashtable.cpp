@@ -1,7 +1,7 @@
 #include "hashtable.h"
 #include <stdlib.h>
 
-Hashtable *initHash(int num_buckets) {
+Hashtable *createHash(int num_buckets = 25) {
 	Hashtable *new_hash = (Hashtable*)malloc(sizeof(Hashtable));
 	new_hash->num_buckets = num_buckets;
 	new_hash->buckets = (List**)malloc(sizeof(List**)*num_buckets);

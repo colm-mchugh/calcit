@@ -1,5 +1,8 @@
 #include "list.h"
 #include "nodes.h"
+#include "context.h"
+#include "analyzer.h"
+
 #include <stdio.h>
 
 extern List* parse_list;
@@ -14,5 +17,9 @@ int main(int argc, char **argv)
 		displayNode((Node*)getElement(parse_list, i));
 		printf("\n");
 	}
+	Context *parse_context = createContext();
+	parse_context->parse_tree = parse_list;
+	analyzeParseTree(parse_context);
+
 	return 0;
 }

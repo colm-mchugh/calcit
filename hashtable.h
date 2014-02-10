@@ -10,7 +10,7 @@ typedef struct _hashtable {
 
 typedef char*  Hashkey;
 
-Hashtable *initHash(int);
+Hashtable *createHash(int);
 
 void deleteHash();
 

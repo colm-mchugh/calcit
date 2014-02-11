@@ -1,5 +1,6 @@
 #include "hashtable.h"
 #include <stdlib.h>
+#include <string.h>
 
 Hashtable *createHash(int num_buckets = 25) {
 	Hashtable *new_hash = (Hashtable*)malloc(sizeof(Hashtable));
@@ -15,13 +16,13 @@ void deleteHash(Hashtable *hashtable) {
 	//TODO :- free the memory associated with hash
 }
 
-int hash(Hashkey k) {
-	// TODO :- implement this!!
-	return 0;
+int hash(Hashtable *hashtable, Hashkey k) {
+	int len = strlen(k);
+	return (len + 4 * (k[0] + 4 * k[len/2])) % hashtable->num_buckets;
 }
 
 void add(Hashtable *h, Hashkey k, void* data) {
-	int index = hash(k) % h->num_buckets;
+	int index = hash(h, k) % h->num_buckets;
 	if (h->buckets[index] == NULL) {
 		h->buckets[index] = createList();
 	}
@@ -29,7 +30,7 @@ void add(Hashtable *h, Hashkey k, void* data) {
 }
 
 void *lookup(Hashtable *h, Hashkey k, compare mf) {
-	int index = hash(k) % h->num_buckets;
+	int index = hash(h, k) % h->num_buckets;
 	void *data = NULL;
 	List *bucket = h->buckets[index];
 	if (bucket != NULL) {

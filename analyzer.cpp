@@ -23,6 +23,10 @@ void analyzeAssignNode(AssignNode *node, Context *ctx) {
 		// requires remove(List*, void*)
 	}
 	add(ctx->symbol_table, node->target->identifier, node);
+	// Analyze the RHS of the assignment:
+	if (node->value != NULL) {
+		analyzeNode(node->value, ctx);
+	}
 }
 
 
@@ -30,21 +34,24 @@ void analyzeIdentNode(IdentNode *node, Context *ctx) {
 	AssignNode *an = (AssignNode*)lookup(ctx->symbol_table, node->identifier, compare_fn);
 	if (an == NULL) {
 		push(ctx->errors, makeError(NO_SUCH_IDENT, node->identifier));
+	} else {
+		// TODO: it may not be necessary to resolve ident every time.
+		node->declaration = (Node*)an;
 	}
 }
 
 
 void analyzeNode(Node *node, Context *ctx) {
 	switch (node->type) {
-		case T_ASSIGN: 
-				analyzeAssignNode((AssignNode*)node, ctx);
-					break;
-		case T_EXPR: 
-				analyzeExprNode((ExprNode*)node, ctx);
-					break;
-		case T_IDENT: 
-				analyzeIdentNode((IdentNode*)node, ctx);
-					break;
+	case T_ASSIGN: 
+			analyzeAssignNode((AssignNode*)node, ctx);
+				break;
+	case T_EXPR: 
+			analyzeExprNode((ExprNode*)node, ctx);
+				break;
+	case T_IDENT: 
+			analyzeIdentNode((IdentNode*)node, ctx);
+				break;
 	}
 }
 

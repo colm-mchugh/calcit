@@ -27,6 +27,7 @@ typedef struct fltConst {
 typedef struct ident {
 	NodeTag type;
 	char *identifier;
+	Node *declaration; 
 } IdentNode;
 
 typedef struct expr {
@@ -40,6 +41,7 @@ typedef struct assign {
 	NodeTag type;
 	IdentNode *target;
 	Node *value;
+	void *resolved_value;
 } AssignNode;
 
 

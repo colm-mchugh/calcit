@@ -48,6 +48,7 @@ FltNode *makeFltNode(float value) {
 IdentNode *makeIdentNode(char* ident) {
 	IdentNode *id_node = (IdentNode*)allocateNodeMemory(T_IDENT);
 	id_node->identifier = (char*)malloc(strlen(ident) + 1);
+	id_node->declaration = NULL;
 	strcpy(id_node->identifier, ident);
 	return id_node;
 }
@@ -64,6 +65,7 @@ AssignNode *makeAssignNode(IdentNode* id, Node* val) {
 	AssignNode *assign_node = (AssignNode*)allocateNodeMemory(T_ASSIGN);
 	assign_node->target = id;
 	assign_node->value = val;
+	assign_node->resolved_value = NULL;
 	return assign_node;
 }
 

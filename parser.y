@@ -26,7 +26,7 @@ void yyerror(const char *s) { printf("ERROR: %s\n", s); }
    Associate a union variable with one or more
    non-terminal symbols
    */
-%type <list> program assignments
+%type <list> program
 %type <assign_node> assignment
 %type <node> expr 
 %type <node> number
@@ -38,25 +38,11 @@ void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 
 %%
 
-program: assignments expr
-		{ 
-		  appendTo($1, $2); 
-		  $$ = $1;
-		  parse_list = $$; 
-		  printf("parsed program\n");
-		}
+program: assignment  { parse_list = createList(); appendTo(parse_list, $1); $$ = parse_list; }
+		| expr  { parse_list = createList(); appendTo(parse_list, $1); $$ = parse_list; }
 		;
 
-assignments:	{ $$ = createList(); }
-			|	assignments assignment 
-				{ 
-				  appendTo($1, $2);
-				  $$ = $1;
-				  printf("parsed assignments\n");
-				}
-			;
-				
-assignment: T_IDENTIFIER T_ASSIGNMENT expr T_SEMICOLON 
+assignment: T_IDENTIFIER T_ASSIGNMENT expr
 			{ $$ = makeAssignNode(makeIdentNode($1), $3); }
 		;
 

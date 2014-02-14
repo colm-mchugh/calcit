@@ -19,19 +19,30 @@ int main(int argc, char **argv)
 	while(1) {
 		printf("Enter> ");
 		input = read_line(stdin);
+		if(strcmp(input, "") == 0) {
+			continue;
+		}
 		if(strcmp(input, "q") == 0) {
 			break;
 		}
-		YY_BUFFER_STATE yybs = yy_scan_buffer(input, strlen(input)+2);
+
+		int input_len = strlen(input);
+		char *parse_input = (char*)malloc(input_len+3);
+		strcpy(parse_input, input);
+		parse_input[input_len] = '\0';
+		parse_input[input_len+1] = '\0';
+		YY_BUFFER_STATE yybs = yy_scan_buffer(parse_input, strlen(input)+2);
 		yy_switch_to_buffer(yybs);
 		yyparse();
 		yy_delete_buffer(yybs);
+		free(parse_input); //needed ??
+
 		parse_context->parse_tree = parse_list;
 		analyzeParseTree(parse_context);
 		if (!is_empty(parse_context->errors)) {
 			while(!is_empty(parse_context->errors)) {
 				ErrorMessage *em = (ErrorMessage*)pop(parse_context->errors);
-				printf("Error: %s\n", em->message);
+				printf("%s\n", em->message);
 				appendTo(parse_context->to_delete, em);
 			}
 		} else {

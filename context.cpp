@@ -1,17 +1,21 @@
 #include "context.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
+static const char *error_message_table[] = { "No such variable" };
 
 ErrorMessage *makeError(ErrorTag error_tag, char* data) {
 	ErrorMessage *em = (ErrorMessage*)malloc(sizeof(ErrorMessage));
-	em->error_tag = error_tag;
 
+	em->error_tag = error_tag;
 	switch(error_tag) {
 		case NO_SUCH_IDENT: 
-			em->message = (char*)malloc(strlen(data)+1);
-			strcpy(em->message, data);
+			// TODO: check for message buffer overwrite
+			sprintf(em->message, "%s: %s", error_message_table[0], data);
 			break;
 	}
+	return em;
 }
 
 int iadd(int x, int y) { return x + y; }
@@ -40,6 +44,12 @@ ExprValue doEval(Context *ctx, ExprValue l, ExprValue r, char opcode) {
 	ExprValue result;
 	if (l.type == T_FLT_CONST || r.type == T_FLT_CONST) {
 		result.type = T_FLT_CONST;
+		if (l.type == T_INT_CONST) {
+			l.value.float_value = l.value.int_value;
+		}
+		if (r.type == T_INT_CONST) {
+			r.value.float_value = r.value.int_value;
+		}
 		flop fop = ctx->eval_ops->flops[opcode];
 		result.value.float_value = fop(l.value.float_value, r.value.float_value);
 	} else {

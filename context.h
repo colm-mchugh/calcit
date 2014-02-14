@@ -9,9 +9,11 @@ typedef enum ERROR {
 	NO_SUCH_IDENT
 } ErrorTag;
 
+#define MAX_ERROR_MSG_LEN 32
+
 typedef struct _error {
 	ErrorTag error_tag;
-	char *message;
+	char message[MAX_ERROR_MSG_LEN];
 } ErrorMessage;
 	
 typedef struct _expr_value {

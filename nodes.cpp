@@ -26,7 +26,7 @@ Node *allocateNodeMemory(NodeTag node_tag) {
 	return new_node;
 }
 
-void freeNodeMemory(Node **node_ptr) {
+void freeNodeMemory(void **node_ptr) {
 	if (node_ptr != NULL && *node_ptr != NULL) {
 			free(*node_ptr);
 			*node_ptr = NULL;
@@ -48,9 +48,14 @@ FltNode *makeFltNode(float value) {
 IdentNode *makeIdentNode(char* ident) {
 	IdentNode *id_node = (IdentNode*)allocateNodeMemory(T_IDENT);
 	id_node->identifier = (char*)malloc(strlen(ident) + 1);
-	id_node->declaration = NULL;
 	strcpy(id_node->identifier, ident);
+	id_node->declaration = NULL;
 	return id_node;
+}
+
+void deleteIdentNode(IdentNode *node) {
+	free(node->identifier);
+	freeNodeMemory((void**)&node);
 }
 
 ExprNode *makeExprNode(char op, Node* oprnd1, Node* oprnd2) {
@@ -61,6 +66,12 @@ ExprNode *makeExprNode(char op, Node* oprnd1, Node* oprnd2) {
 	return expr_node;
 }
 
+void deleteExprNode(ExprNode *node) {
+	deleteNode(node->left);
+	deleteNode(node->right);
+	freeNodeMemory((void**)&node);
+}
+
 AssignNode *makeAssignNode(IdentNode* id, Node* val) {
 	AssignNode *assign_node = (AssignNode*)allocateNodeMemory(T_ASSIGN);
 	assign_node->target = id;
@@ -68,6 +79,37 @@ AssignNode *makeAssignNode(IdentNode* id, Node* val) {
 	assign_node->resolved_value = NULL;
 	return assign_node;
 }
+
+void deleteAssignNode(AssignNode *node) {
+	if (node != NULL) {
+		if (node->resolved_value != NULL) {
+			free (node->resolved_value);
+		}
+		if (node->value != NULL) {
+			deleteNode(node->value);
+		}
+		if (node->target != NULL) {
+			deleteIdentNode(node->target);
+		}
+		freeNodeMemory((void**)&node);
+	}
+}
+
+
+void deleteNode(Node *node) {
+	switch (node->type) {
+		case T_ASSIGN:
+			deleteAssignNode((AssignNode*)node); break;
+		case T_IDENT:
+			deleteIdentNode((IdentNode*)node); break;
+		case T_EXPR:
+			deleteExprNode((ExprNode*)node); break;
+		default:
+			freeNodeMemory((void**)&node); break;
+	}
+}
+			
+
 
 // TODO Figure out best way to visit nodes
 // Does this need to be a recursive function?

@@ -17,8 +17,21 @@ ListNode *createListNode(void *data) {
 	return new_node;
 }
 
-void deleteList(List*) {
-	// TODO - free memory allocated for the List
+void deleteList(List** list_ptr) {
+	// free memory allocated for the List
+	// This does not free the data
+	if ((list_ptr != NULL) && (*list_ptr != NULL)) {
+		List *list = *list_ptr;
+		ListNode *node = list->head;
+		ListNode *next_node = node->next;
+		while(node != NULL) {
+			free(node);
+			node = next_node;
+			next_node = node->next;
+		}
+		free(list);
+		*list_ptr = NULL;
+	}
 }
 
 int list_size(List *list) {
@@ -74,6 +87,19 @@ void *getMatch(List *list, compare comp_op, void *data) {
 	return (n != NULL? n->data : NULL);
 }
 
+void *unlinkElement(List *list, ListNode *element);
+
+void *removeIfExists(List* list, void* data) {
+	ListNode *element = list->head;
+	while ((element != NULL) && (element->data != data)) {
+		element = element->next;
+	}
+	if (element != NULL) {
+		data = unlinkElement(list, element);
+	}
+	return data;
+}
+
 // remove element at index (0-indexed)
 void *removeElement(List *list, int index) {
 	void *data = NULL;
@@ -86,6 +112,11 @@ void *removeElement(List *list, int index) {
 	while (i++ < index) {
 		element = element->next;
 	}
+	data = unlinkElement(list, element);
+	return data;
+}
+
+void *unlinkElement(List *list, ListNode *element) {
 	if (element->prev == NULL) {
 		list->head = element->next;
 	} else {
@@ -96,7 +127,7 @@ void *removeElement(List *list, int index) {
 	} else {
 		element->next->prev = element->prev;
 	}
-	data = element->data;
+	void *data = element->data;
 	free(element);
 	list->num_nodes--;
 	return data;

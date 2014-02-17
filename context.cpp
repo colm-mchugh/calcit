@@ -18,14 +18,37 @@ ErrorMessage *makeError(ErrorTag error_tag, char* data) {
 	return em;
 }
 
-int iadd(int x, int y) { return x + y; }
-int isub(int x, int y) { return x - y; }
-int idiv(int x, int y) { return x / y; }
-int imul(int x, int y) { return x * y; }
-float fadd(float x, float y) { return x + y; }
-float fsub(float x, float y) { return x - y; }
-float fdiv(float x, float y) { return x / y; }
-float fmul(float x, float y) { return x * y; }
+int iadd(int x, int y) { 
+	return x + y; 
+}
+
+int isub(int x, int y) { 
+	return x - y; 
+}
+
+int idiv(int x, int y) { 
+	return x / y; 
+}
+
+int imul(int x, int y) { 
+	return x * y; 
+}
+
+float fadd(float x, float y) { 
+	return x + y; 
+}
+
+float fsub(float x, float y) { 
+	return x - y; 
+}
+
+float fdiv(float x, float y) { 
+	return x / y; 
+}
+
+float fmul(float x, float y) { 
+	return x * y; 
+}
 
 EvalOps *createEvalOps() {
 	EvalOps *eval_ops = (EvalOps*)malloc(sizeof(EvalOps));
@@ -69,6 +92,27 @@ Context *createContext() {
 	return new_context;
 }
 
+bool is_assign(List *parse_tree) {
+	return (list_size(parse_tree) == 1) &&
+		((Node*)getElement(parse_tree, 0))->type == T_ASSIGN;
+}
+
+void cleanUpContext(Context* ctx) {
+	if(is_empty(ctx->errors) && is_assign(ctx->parse_tree)) {
+		removeElement(ctx->parse_tree, 0);
+		// don't remove the assign node itself,
+		// it is in the symbol table
+	}
+	while(!is_empty(ctx->errors)) {
+		ErrorMessage *em = (ErrorMessage*)pop(ctx->errors);
+		free(em);
+	}
+	int num_nodes = list_size(ctx->parse_tree);
+	for (int i = 0; i < num_nodes; i++) {
+		Node *n = (Node*)removeElement(ctx->parse_tree, i);
+		deleteNode(n);
+	}
+}
 void deleteContext(Context *ctx) {
 	//TODO - free memory allocated 
 }

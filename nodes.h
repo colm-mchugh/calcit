@@ -51,6 +51,8 @@ IdentNode *makeIdentNode(char*);
 ExprNode *makeExprNode(char, Node*, Node*);
 AssignNode *makeAssignNode(IdentNode*, Node*);
 
+void deleteNode(Node*);
+
 void displayNode(Node *);
 void displayIntNode(IntNode*);
 void displayFltNode(FltNode*);

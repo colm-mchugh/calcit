@@ -17,7 +17,7 @@ typedef bool (*compare)(void*, void*);
 
 List *createList();
 
-void deleteList(List*);
+void deleteList(List**);
 
 int list_size(List*);
 
@@ -26,6 +26,8 @@ void *getElement(List*, int);
 void *getMatch(List *, compare , void *);
 
 void *removeElement(List*, int);
+
+void *removeIfExists(List*, void*);
 
 void appendTo(List*, void*);
 

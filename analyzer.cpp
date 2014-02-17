@@ -18,14 +18,18 @@ bool compare_fn(void *arg1, void *arg2) {
 void analyzeAssignNode(AssignNode *node, Context *ctx) {
 	compare cf = compare_fn;
 	AssignNode *an = (AssignNode*)lookup(ctx->symbol_table, node->target->identifier, cf);
-	if (an != NULL) {
-		// TODO: Remove an from symbol table - there is a newer assignment which overwrites it
-		// requires remove(List*, void*)
-	}
-	add(ctx->symbol_table, node->target->identifier, node);
 	// Analyze the RHS of the assignment:
+	int error_count = list_size(ctx->errors);
 	if (node->value != NULL) {
 		analyzeNode(node->value, ctx);
+	}
+	if (list_size(ctx->errors) == error_count) {
+		// If there are no errors from analyze of RHS, remove existing assignment and add new assignment 
+		if (an != NULL) { 
+			remove(ctx->symbol_table, node->target->identifier, an);
+			deleteNode((Node*)an);
+		}
+		add(ctx->symbol_table, node->target->identifier, node);
 	}
 }
 

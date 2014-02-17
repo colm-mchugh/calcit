@@ -46,6 +46,8 @@ void deleteContext(Context*);
 
 ErrorMessage *makeError(ErrorTag, char*);
 
-ExprValue doEval(Context *ctx, ExprValue l, ExprValue r, char opcode); 
+ExprValue doEval(Context *, ExprValue, ExprValue, char); 
+
+void cleanUpContext(Context*);
 
 #endif

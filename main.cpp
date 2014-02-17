@@ -1,4 +1,4 @@
-#include "list.h"
+#include "parser_wrapper.h"
 #include "nodes.h"
 #include "context.h"
 #include "analyzer.h"
@@ -6,11 +6,6 @@
 #include <stdio.h>
 #include "lex.h"
 #include "read_line.h"
-
-extern List* parse_list;
-typedef yy_buffer_state *YY_BUFFER_STATE;
-extern int yyparse();
-extern YY_BUFFER_STATE yy_scan_buffer(char *, size_t);
 
 int main(int argc, char **argv)
 {
@@ -25,19 +20,9 @@ int main(int argc, char **argv)
 		if(strcmp(input, "q") == 0) {
 			break;
 		}
+		parse_context->parse_tree = parse_str(input);
+		free_line(&input);
 
-		int input_len = strlen(input);
-		char *parse_input = (char*)malloc(input_len+3);
-		strcpy(parse_input, input);
-		parse_input[input_len] = '\0';
-		parse_input[input_len+1] = '\0';
-		YY_BUFFER_STATE yybs = yy_scan_buffer(parse_input, strlen(input)+2);
-		yy_switch_to_buffer(yybs);
-		yyparse();
-		yy_delete_buffer(yybs);
-		free(parse_input); //needed ??
-
-		parse_context->parse_tree = parse_list;
 		analyzeParseTree(parse_context);
 		if (!is_empty(parse_context->errors)) {
 			while(!is_empty(parse_context->errors)) {
@@ -54,6 +39,7 @@ int main(int argc, char **argv)
 				case T_FLT_CONST: printf("%lf\n", val.value.float_value); break;
 			}
 		}
+		cleanUpContext(parse_context);
 	}
 	return 0;
 }

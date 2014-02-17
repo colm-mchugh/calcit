@@ -12,8 +12,17 @@ Hashtable *createHash(int num_buckets = 25) {
 	return new_hash;
 }
 
-void deleteHash(Hashtable *hashtable) {
-	//TODO :- free the memory associated with hash
+void deleteHash(Hashtable **hashtable_ptr) {
+	//free the memory associated with hash
+	if ((hashtable_ptr != NULL) && (*hashtable_ptr != NULL)) {
+		Hashtable *hash_table = *hashtable_ptr;
+		for(int i = 0; i < hash_table->num_buckets; i++) {
+			deleteList(&hash_table->buckets[i]);
+		}
+		free(hash_table);
+		*hashtable_ptr = NULL;
+	}
+	
 }
 
 int hash(Hashtable *hashtable, Hashkey k) {
@@ -39,3 +48,11 @@ void *lookup(Hashtable *h, Hashkey k, compare mf) {
 	return data;
 }
 
+
+void remove(Hashtable* h, Hashkey k, void* data) {
+	int index = hash(h, k) % h->num_buckets;
+	List *bucket = h->buckets[index];
+	if (bucket != NULL) {
+		removeIfExists(bucket, data);
+	}
+}

@@ -7,6 +7,7 @@ Stack *createStack() {
 
 void deleteStack(Stack* s) {
 	// TODO: free memory allocated by the Stack
+	deleteList(&s);
 }
 
 void push(Stack* s, void* data) {

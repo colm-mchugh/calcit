@@ -12,10 +12,12 @@ typedef char*  Hashkey;
 
 Hashtable *createHash(int);
 
-void deleteHash();
+void deleteHash(Hashtable**);
 
 void add(Hashtable*, Hashkey, void*);
 
 void *lookup(Hashtable *, Hashkey, compare);
+
+void remove(Hashtable*, Hashkey, void*);
 
 #endif

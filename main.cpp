@@ -4,7 +4,7 @@
 #include "analyzer.h"
 #include "evaluater.h"
 #include <stdio.h>
-#include "lex.h"
+#include <string.h>
 #include "read_line.h"
 
 int main(int argc, char **argv)
@@ -24,11 +24,10 @@ int main(int argc, char **argv)
 		free_line(&input);
 
 		analyzeParseTree(parse_context);
-		if (!is_empty(parse_context->errors)) {
-			while(!is_empty(parse_context->errors)) {
-				ErrorMessage *em = (ErrorMessage*)pop(parse_context->errors);
+		if (list_size(parse_context->errors) > 0) {
+			for(int i = 0; i < list_size(parse_context->errors); i++) {
+				ErrorMessage *em = (ErrorMessage*)getElement(parse_context->errors, i);
 				printf("%s\n", em->message);
-				appendTo(parse_context->to_delete, em);
 			}
 		} else {
 			List *parse_tree = parse_context->parse_tree;
@@ -41,5 +40,7 @@ int main(int argc, char **argv)
 		}
 		cleanUpContext(parse_context);
 	}
+	free_line(&input);
+	deleteContext(parse_context);
 	return 0;
 }

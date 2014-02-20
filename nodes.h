@@ -7,7 +7,8 @@ typedef enum NodeTag
 	T_FLT_CONST,
 	T_IDENT,
 	T_EXPR,
-	T_ASSIGN
+	T_ASSIGN,
+	T_SYNTAX_ERROR
 } NodeTag;
 
 typedef struct Node {
@@ -44,15 +45,21 @@ typedef struct assign {
 	void *resolved_value;
 } AssignNode;
 
+typedef struct syntax_error {
+	NodeTag type;
+	char *error_message;
+} SyntaxErrNode;
+
 
 IntNode *makeIntNode(int);
 FltNode *makeFltNode(float);
-IdentNode *makeIdentNode(char*);
+IdentNode *makeIdentNode(const char*);
 ExprNode *makeExprNode(char, Node*, Node*);
 AssignNode *makeAssignNode(IdentNode*, Node*);
+SyntaxErrNode *makeSyntaxErrNode(const char *);
 
 void deleteNode(Node*);
-
+bool genericDeleteNode(void*);
 void displayNode(Node *);
 void displayIntNode(IntNode*);
 void displayFltNode(FltNode*);

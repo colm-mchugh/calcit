@@ -1,22 +1,20 @@
 #include "parser_wrapper.h"
+#include "nodes.h"
+#include "parser.hpp"
 #include "lex.h"
 
-extern List* parse_list;
-typedef yy_buffer_state *YY_BUFFER_STATE;
-extern int yyparse();
-extern YY_BUFFER_STATE yy_scan_buffer(char *, size_t);
+extern int yyparse (yyscan_t scanner, void *parse_tree_ptr);
 
 List *parse_str(char *str)
 {
-	int input_len = strlen(str);
-	char *parse_input = (char*)malloc(input_len+3);
-	strcpy(parse_input, str);
-	parse_input[input_len] = '\0';
-	parse_input[input_len+1] = '\0';
-	YY_BUFFER_STATE yybs = yy_scan_buffer(parse_input, strlen(str)+2);
-	yy_switch_to_buffer(yybs);
-	yyparse();
-	yy_delete_buffer(yybs);
-	free(parse_input); //needed ??
-	return parse_list;
+	yyscan_t scanner;
+	List *parse_tree = createList();
+	if (yylex_init(&scanner)) {
+		//TODO: handle failure in initializing lexer
+	}
+	YY_BUFFER_STATE yybs = yy_scan_string(str, scanner);
+	yyparse(scanner, (void*)parse_tree);
+	yy_delete_buffer(yybs, scanner);
+	yylex_destroy(scanner);
+	return parse_tree;
 }

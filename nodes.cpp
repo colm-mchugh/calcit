@@ -21,6 +21,9 @@ Node *allocateNodeMemory(NodeTag node_tag) {
 		case T_INT_CONST: 
 				new_node = (Node*)malloc(sizeof(IntNode));
 					break;
+		case T_SYNTAX_ERROR: 
+				new_node = (Node*)malloc(sizeof(SyntaxErrNode));
+					break;
 	}
 	new_node->type = node_tag;
 	return new_node;
@@ -45,7 +48,7 @@ FltNode *makeFltNode(float value) {
 	return flt_node;
 }
 
-IdentNode *makeIdentNode(char* ident) {
+IdentNode *makeIdentNode(const char* ident) {
 	IdentNode *id_node = (IdentNode*)allocateNodeMemory(T_IDENT);
 	id_node->identifier = (char*)malloc(strlen(ident) + 1);
 	strcpy(id_node->identifier, ident);
@@ -95,6 +98,18 @@ void deleteAssignNode(AssignNode *node) {
 	}
 }
 
+SyntaxErrNode *makeSyntaxErrNode(const char *error) {
+	SyntaxErrNode *syntax_error = (SyntaxErrNode*)allocateNodeMemory(T_SYNTAX_ERROR);
+	syntax_error->error_message = (char*)malloc(strlen(error) + 1);
+	strcpy(syntax_error->error_message, error);
+	return syntax_error;
+}
+
+void deleteSyntaxErrNode(SyntaxErrNode *node) {
+	free(node->error_message);
+	freeNodeMemory((void**)&node);
+}
+
 
 void deleteNode(Node *node) {
 	switch (node->type) {
@@ -104,12 +119,16 @@ void deleteNode(Node *node) {
 			deleteIdentNode((IdentNode*)node); break;
 		case T_EXPR:
 			deleteExprNode((ExprNode*)node); break;
+		case T_SYNTAX_ERROR:
+			deleteSyntaxErrNode((SyntaxErrNode*)node); break;
 		default:
 			freeNodeMemory((void**)&node); break;
 	}
 }
 			
-
+bool genericDeleteNode(void *node) {
+	deleteNode((Node*)node);
+}
 
 // TODO Figure out best way to visit nodes
 // Does this need to be a recursive function?

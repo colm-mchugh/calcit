@@ -17,17 +17,19 @@ ListNode *createListNode(void *data) {
 	return new_node;
 }
 
-void deleteList(List** list_ptr) {
+void deleteList(List** list_ptr, deleter delete_fn ) {
 	// free memory allocated for the List
-	// This does not free the data
 	if ((list_ptr != NULL) && (*list_ptr != NULL)) {
 		List *list = *list_ptr;
 		ListNode *node = list->head;
-		ListNode *next_node = node->next;
+		ListNode *next_node = NULL;
 		while(node != NULL) {
+			// save the next node
+			next_node = node->next;
+			// hand off node's data to deleter function
+			delete_fn(node->data);
 			free(node);
 			node = next_node;
-			next_node = node->next;
 		}
 		free(list);
 		*list_ptr = NULL;

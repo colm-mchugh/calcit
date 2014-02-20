@@ -3,6 +3,8 @@
 
 #include "list.h"
 
+#define DEFAULT_NUM_BUCKETS	31
+
 typedef struct _hashtable {
 		List** buckets;
 		int num_buckets;
@@ -12,7 +14,7 @@ typedef char*  Hashkey;
 
 Hashtable *createHash(int);
 
-void deleteHash(Hashtable**);
+void deleteHash(Hashtable**, deleter);
 
 void add(Hashtable*, Hashkey, void*);
 

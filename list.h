@@ -15,9 +15,11 @@ typedef struct _list {
 
 typedef bool (*compare)(void*, void*);
 
+typedef bool (*deleter)(void*);
+
 List *createList();
 
-void deleteList(List**);
+void deleteList(List**, deleter);
 
 int list_size(List*);
 

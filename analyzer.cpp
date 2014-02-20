@@ -37,7 +37,7 @@ void analyzeAssignNode(AssignNode *node, Context *ctx) {
 void analyzeIdentNode(IdentNode *node, Context *ctx) {
 	AssignNode *an = (AssignNode*)lookup(ctx->symbol_table, node->identifier, compare_fn);
 	if (an == NULL) {
-		push(ctx->errors, makeError(NO_SUCH_IDENT, node->identifier));
+		prependTo(ctx->errors, makeError(NO_SUCH_IDENT, node->identifier));
 	} else {
 		// TODO: it may not be necessary to resolve ident every time.
 		node->declaration = (Node*)an;
@@ -55,6 +55,9 @@ void analyzeNode(Node *node, Context *ctx) {
 				break;
 	case T_IDENT: 
 			analyzeIdentNode((IdentNode*)node, ctx);
+				break;
+	case T_SYNTAX_ERROR: 
+			prependTo(ctx->errors, makeError(SYNTAX_ERROR, ((SyntaxErrNode*)node)->error_message));
 				break;
 	}
 }

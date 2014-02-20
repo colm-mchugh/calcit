@@ -1,10 +1,10 @@
-CFLAGS := -ggdb
+target := parser
+C_SRCS := parser.cpp nodes.cpp list.cpp main.cpp tokens.cpp analyzer.cpp context.cpp hashtable.cpp stack.cpp read_line.cpp parser_wrapper.cpp evaluater.cpp
+C_OBJS := ${C_SRCS:.cpp=.o}
+C_FLAGS := -ggdb
 CPP := g++
 
-all: parser
-
-clean:
-	rm parser.cpp parser.hpp parser tokens.cpp
+all: $(target)
 
 parser.cpp: parser.y
 	bison -d -o $@ $^
@@ -12,7 +12,15 @@ parser.cpp: parser.y
 parser.hpp:	parser.cpp
 
 tokens.cpp:	tokens.l parser.hpp
-	flex --header-file=lex.h -o $@ $^
+	flex -R --header-file=lex.h -o $@ $^
 
-parser: parser.cpp nodes.cpp list.cpp main.cpp tokens.cpp analyzer.cpp context.cpp hashtable.cpp stack.cpp read_line.cpp parser_wrapper.cpp
-	$(CPP) -o $@ $(CFLAGS) *.cpp
+$(C_OBJS): $(C_SRCS)
+	$(CPP) $(C_FLAGS) -c $^
+
+$(target): $(C_OBJS)
+	$(CPP) -o $@ $(C_FLAGS) $(C_OBJS)
+
+clean:
+	rm -rf parser.cpp parser.hpp tokens.cpp lex.h
+	rm -rf $(target)
+	rm -rf $(C_OBJS)

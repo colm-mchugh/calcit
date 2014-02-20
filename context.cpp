@@ -3,18 +3,12 @@
 #include <string.h>
 #include <stdio.h>
 
-static const char *error_message_table[] = { "No such variable" };
+static const char *error_message_table[] = { "No such variable", "Incorrect syntax" };
 
 ErrorMessage *makeError(ErrorTag error_tag, char* data) {
 	ErrorMessage *em = (ErrorMessage*)malloc(sizeof(ErrorMessage));
-
 	em->error_tag = error_tag;
-	switch(error_tag) {
-		case NO_SUCH_IDENT: 
-			// TODO: check for message buffer overwrite
-			sprintf(em->message, "%s: %s", error_message_table[0], data);
-			break;
-	}
+	sprintf(em->message, "%s: %s", error_message_table[error_tag], data);
 	return em;
 }
 
@@ -85,9 +79,8 @@ ExprValue doEval(Context *ctx, ExprValue l, ExprValue r, char opcode) {
 
 Context *createContext() {
 	Context *new_context = (Context*)malloc(sizeof(Context));
-	new_context->symbol_table = createHash(25);
-	new_context->errors = createStack();
-	new_context->to_delete = createList();
+	new_context->symbol_table = createHash(DEFAULT_NUM_BUCKETS);
+	new_context->errors = createList();
 	new_context->eval_ops = createEvalOps();
 	return new_context;
 }
@@ -98,23 +91,27 @@ bool is_assign(List *parse_tree) {
 }
 
 void cleanUpContext(Context* ctx) {
-	if(is_empty(ctx->errors) && is_assign(ctx->parse_tree)) {
+	if((list_size(ctx->errors) == 0) && is_assign(ctx->parse_tree)) {
 		removeElement(ctx->parse_tree, 0);
 		// don't remove the assign node itself,
 		// it is in the symbol table
 	}
-	while(!is_empty(ctx->errors)) {
-		ErrorMessage *em = (ErrorMessage*)pop(ctx->errors);
+	while(list_size(ctx->errors) > 0) {
+		ErrorMessage *em = (ErrorMessage*)removeElement(ctx->errors, 0);
 		free(em);
 	}
 	int num_nodes = list_size(ctx->parse_tree);
+	// Remove all the nodes from the list
 	for (int i = 0; i < num_nodes; i++) {
-		Node *n = (Node*)removeElement(ctx->parse_tree, i);
+		Node *n = (Node*)removeElement(ctx->parse_tree, 0);
 		deleteNode(n);
 	}
 }
 void deleteContext(Context *ctx) {
-	//TODO - free memory allocated 
+	deleteList(&ctx->parse_tree, genericDeleteNode);
+	deleteHash(&ctx->symbol_table, genericDeleteNode);
+	free(ctx->eval_ops);
+	deleteList(&ctx->errors, NULL);
 }
 
 

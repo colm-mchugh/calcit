@@ -3,10 +3,10 @@
 #include "nodes.h"
 #include "list.h"
 #include "hashtable.h"
-#include "stack.h"
 
 typedef enum ERROR {
-	NO_SUCH_IDENT
+	NO_SUCH_IDENT = 0,
+	SYNTAX_ERROR = 1
 } ErrorTag;
 
 #define MAX_ERROR_MSG_LEN 32
@@ -36,8 +36,7 @@ typedef struct _parsecontext {
 	List *parse_tree;
 	Hashtable *symbol_table;
 	EvalOps *eval_ops;
-	Stack *errors;
-	List *to_delete;
+	List *errors;
 } Context;
 
 Context *createContext();

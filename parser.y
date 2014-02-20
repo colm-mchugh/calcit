@@ -1,13 +1,26 @@
+%define api.pure
+%lex-param { yyscan_t scanner }
+%parse-param { yyscan_t scanner }
+%parse-param { void *parse_tree }
 %{
 #include "nodes.h"
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "parser.hpp"
+#include "lex.h"
 
-List *parse_list;
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void *yyscan_t;
+#endif
 
-extern int yylex();
-void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+void yyerror(yyscan_t scanner, void *parse_tree, const char *s) {
+	List *l = (List*)parse_tree;
+	SyntaxErrNode *err = makeSyntaxErrNode(s);
+	appendTo(l, err);
+}
+
 %}
 
 %union {
@@ -18,6 +31,7 @@ void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	int token;
 }
 
+%start program
 %token <string> T_INT T_FLT T_IDENTIFIER
 %token <token> T_ASSIGNMENT T_MINUS T_PLUS T_MULT
 %token <token> T_DIV T_LPAREN T_RPAREN T_SEMICOLON
@@ -34,12 +48,10 @@ void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 %left T_PLUS T_MINUS
 %left T_MULT T_DIV
 
-%start program
-
 %%
 
-program: assignment  { parse_list = createList(); appendTo(parse_list, $1); $$ = parse_list; }
-		| expr  { parse_list = createList(); appendTo(parse_list, $1); $$ = parse_list; }
+program: assignment  { appendTo((List*)parse_tree, $1); $$ = (List*)parse_tree; }
+		| expr  { appendTo((List*)parse_tree, $1); $$ = (List*)parse_tree; }
 		;
 
 assignment: T_IDENTIFIER T_ASSIGNMENT expr

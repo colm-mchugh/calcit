@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-Hashtable *createHash(int num_buckets = 25) {
+
+Hashtable *createHash(int num_buckets = DEFAULT_NUM_BUCKETS) {
 	Hashtable *new_hash = (Hashtable*)malloc(sizeof(Hashtable));
 	new_hash->num_buckets = num_buckets;
 	new_hash->buckets = (List**)malloc(sizeof(List**)*num_buckets);
@@ -12,12 +13,12 @@ Hashtable *createHash(int num_buckets = 25) {
 	return new_hash;
 }
 
-void deleteHash(Hashtable **hashtable_ptr) {
+void deleteHash(Hashtable **hashtable_ptr, deleter delete_fn) {
 	//free the memory associated with hash
 	if ((hashtable_ptr != NULL) && (*hashtable_ptr != NULL)) {
 		Hashtable *hash_table = *hashtable_ptr;
 		for(int i = 0; i < hash_table->num_buckets; i++) {
-			deleteList(&hash_table->buckets[i]);
+			deleteList(&hash_table->buckets[i], delete_fn);
 		}
 		free(hash_table);
 		*hashtable_ptr = NULL;
@@ -25,13 +26,17 @@ void deleteHash(Hashtable **hashtable_ptr) {
 	
 }
 
-int hash(Hashtable *hashtable, Hashkey k) {
+int hash(Hashkey k, int num_buckets) {
+	int hash_val = 0;
 	int len = strlen(k);
-	return (len + 4 * (k[0] + 4 * k[len/2])) % hashtable->num_buckets;
+	for (int i = 0; i < len; i++) {
+		hash_val = (DEFAULT_NUM_BUCKETS * hash_val + k[i]) % num_buckets;
+	}
+	return hash_val;
 }
 
 void add(Hashtable *h, Hashkey k, void* data) {
-	int index = hash(h, k) % h->num_buckets;
+	int index = hash(k, h->num_buckets);
 	if (h->buckets[index] == NULL) {
 		h->buckets[index] = createList();
 	}
@@ -39,7 +44,7 @@ void add(Hashtable *h, Hashkey k, void* data) {
 }
 
 void *lookup(Hashtable *h, Hashkey k, compare mf) {
-	int index = hash(h, k) % h->num_buckets;
+	int index = hash(k, h->num_buckets);
 	void *data = NULL;
 	List *bucket = h->buckets[index];
 	if (bucket != NULL) {
@@ -50,7 +55,7 @@ void *lookup(Hashtable *h, Hashkey k, compare mf) {
 
 
 void remove(Hashtable* h, Hashkey k, void* data) {
-	int index = hash(h, k) % h->num_buckets;
+	int index = hash(k, h->num_buckets);
 	List *bucket = h->buckets[index];
 	if (bucket != NULL) {
 		removeIfExists(bucket, data);

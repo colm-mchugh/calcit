@@ -27,7 +27,9 @@ void deleteList(List** list_ptr, deleter delete_fn ) {
 			// save the next node
 			next_node = node->next;
 			// hand off node's data to deleter function
-			delete_fn(node->data);
+			if (delete_fn != NULL) {
+				delete_fn(node->data);
+			}
 			free(node);
 			node = next_node;
 		}

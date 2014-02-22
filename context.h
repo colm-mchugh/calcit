@@ -41,7 +41,7 @@ typedef struct _parsecontext {
 
 Context *createContext();
 
-void deleteContext(Context*);
+void deleteContext(Context**);
 
 ErrorMessage *makeError(ErrorTag, char*);
 

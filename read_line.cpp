@@ -10,10 +10,15 @@ char *read_line(FILE *source) {
 	char ch = 0;
 
 	while ((ch = fgetc(source)) != '\n') {
+		// resize check
 		if (char_index == buf_size) {
 			buf = (char*)realloc(buf, buf_size += size_incr);
 		}
 		buf[char_index++] = ch;
+	}
+	// resize check
+	if (char_index == buf_size) {
+		buf = (char*)realloc(buf, buf_size += size_incr);
 	}
 	buf[char_index] = '\0';
 	return buf;

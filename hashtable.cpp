@@ -20,6 +20,7 @@ void deleteHash(Hashtable **hashtable_ptr, deleter delete_fn) {
 		for(int i = 0; i < hash_table->num_buckets; i++) {
 			deleteList(&hash_table->buckets[i], delete_fn);
 		}
+		free(hash_table->buckets);
 		free(hash_table);
 		*hashtable_ptr = NULL;
 	}

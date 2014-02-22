@@ -85,33 +85,35 @@ Context *createContext() {
 	return new_context;
 }
 
-bool is_assign(List *parse_tree) {
-	return (list_size(parse_tree) == 1) &&
-		((Node*)getElement(parse_tree, 0))->type == T_ASSIGN;
+bool is_assign_stmt(Context *ctx) {
+	return (list_size(ctx->parse_tree) == 1) &&
+		((Node*)getElement(ctx->parse_tree, 0))->type == T_ASSIGN;
+}
+
+bool zero_errors(Context* ctx) {
+	return (list_size(ctx->errors) == 0);
 }
 
 void cleanUpContext(Context* ctx) {
-	if((list_size(ctx->errors) == 0) && is_assign(ctx->parse_tree)) {
-		removeElement(ctx->parse_tree, 0);
-		// don't remove the assign node itself,
-		// it is in the symbol table
-	}
+	// Delete parse_tree memory. Don't delete assign nodes because they are in symbol table
+	deleter del_fn = ((zero_errors(ctx) && is_assign_stmt(ctx)) ? NULL : genericDeleteNode);
+	deleteList(&ctx->parse_tree, del_fn);
+	// Delete error messages
 	while(list_size(ctx->errors) > 0) {
 		ErrorMessage *em = (ErrorMessage*)removeElement(ctx->errors, 0);
 		free(em);
 	}
-	int num_nodes = list_size(ctx->parse_tree);
-	// Remove all the nodes from the list
-	for (int i = 0; i < num_nodes; i++) {
-		Node *n = (Node*)removeElement(ctx->parse_tree, 0);
-		deleteNode(n);
-	}
 }
-void deleteContext(Context *ctx) {
-	deleteList(&ctx->parse_tree, genericDeleteNode);
-	deleteHash(&ctx->symbol_table, genericDeleteNode);
-	free(ctx->eval_ops);
-	deleteList(&ctx->errors, NULL);
+void deleteContext(Context **ctx_ptr) {
+	if ((ctx_ptr != NULL) && (*ctx_ptr != NULL)) {
+		Context *ctx = *ctx_ptr;
+		deleteList(&ctx->parse_tree, genericDeleteNode);
+		deleteHash(&ctx->symbol_table, genericDeleteNode);
+		free(ctx->eval_ops);
+		deleteList(&ctx->errors, NULL);
+		free(ctx);
+		*ctx_ptr = NULL;
+	}
 }
 
 

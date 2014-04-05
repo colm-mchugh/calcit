@@ -36,22 +36,23 @@ void freeNodeMemory(void **node_ptr) {
 	}
 }
 
-IntNode *makeIntNode(int value) {
+IntNode *makeIntNode(const char* value) {
 	IntNode *int_node = (IntNode*)allocateNodeMemory(T_INT_CONST);
-	int_node->value = value;
+	int_node->value = atoi(value);
 	return int_node;
 }
 
-FltNode *makeFltNode(float value) {
+FltNode *makeFltNode(const char* value) {
 	FltNode *flt_node = (FltNode*)allocateNodeMemory(T_FLT_CONST);
-	flt_node->value = value;
+	flt_node->value = atof(value);
 	return flt_node;
 }
 
 IdentNode *makeIdentNode(const char* ident) {
 	IdentNode *id_node = (IdentNode*)allocateNodeMemory(T_IDENT);
-	id_node->identifier = (char*)malloc(strlen(ident) + 1);
-	strcpy(id_node->identifier, ident);
+	int ident_len = strlen(ident) + 1;
+	id_node->identifier = (char*)malloc(ident_len);
+	strncpy(id_node->identifier, ident, ident_len);
 	id_node->declaration = NULL;
 	return id_node;
 }
@@ -100,8 +101,9 @@ void deleteAssignNode(AssignNode *node) {
 
 SyntaxErrNode *makeSyntaxErrNode(const char *error) {
 	SyntaxErrNode *syntax_error = (SyntaxErrNode*)allocateNodeMemory(T_SYNTAX_ERROR);
-	syntax_error->error_message = (char*)malloc(strlen(error) + 1);
-	strcpy(syntax_error->error_message, error);
+	int msg_len = strlen(error) + 1;
+	syntax_error->error_message = (char*)malloc(msg_len);
+	strncpy(syntax_error->error_message, error, msg_len);
 	return syntax_error;
 }
 

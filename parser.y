@@ -10,6 +10,7 @@
 #include "parser.hpp"
 #include "lex.h"
 
+
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
 typedef void *yyscan_t;
@@ -27,7 +28,7 @@ void yyerror(yyscan_t scanner, void *parse_tree, const char *s) {
 	List *list;
 	Node *node;
 	AssignNode *assign_node;
-	char string[64];
+	char string[MAX_TOKEN_LEN];
 	int token;
 }
 
@@ -74,9 +75,9 @@ expr	:	expr T_PLUS expr
 		;
 
 number	: T_INT 
-		{ $$ = (Node*)makeIntNode(atoi($1)); }
+		{ $$ = (Node*)makeIntNode($1); }
 		| T_FLT 
-		{ $$ = (Node*)makeFltNode(atof($1)); }
+		{ $$ = (Node*)makeFltNode($1); }
 
 		;
 %%

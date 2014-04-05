@@ -38,10 +38,6 @@ void deleteList(List** list_ptr, deleter delete_fn ) {
 	}
 }
 
-int list_size(List *list) {
-	return list->num_nodes;
-}
-
 // Add data to the START of the list
 void prependTo(List *list, void *data) {
 	ListNode *new_node = createListNode(data);

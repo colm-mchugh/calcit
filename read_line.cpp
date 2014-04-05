@@ -2,23 +2,24 @@
 #include <string.h>
 #include "read_line.h"
 
+#define SIZE_INCREMENT 10
+
 char *read_line(FILE *source) {
-	size_t size_incr = 10;
-	char *buf = (char*)malloc(sizeof(char) * size_incr);
-	size_t buf_size = size_incr;
+	char *buf = (char*)malloc(sizeof(char) * SIZE_INCREMENT);
+	size_t buf_size = SIZE_INCREMENT;
 	size_t char_index = 0;
 	char ch = 0;
 
 	while ((ch = fgetc(source)) != '\n') {
 		// resize check
 		if (char_index == buf_size) {
-			buf = (char*)realloc(buf, buf_size += size_incr);
+			buf = (char*)realloc(buf, buf_size += SIZE_INCREMENT);
 		}
 		buf[char_index++] = ch;
 	}
 	// resize check
 	if (char_index == buf_size) {
-		buf = (char*)realloc(buf, buf_size += size_incr);
+		buf = (char*)realloc(buf, buf_size += SIZE_INCREMENT);
 	}
 	buf[char_index] = '\0';
 	return buf;

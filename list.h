@@ -13,6 +13,8 @@ typedef struct _list {
 	int num_nodes;
 } List;
 
+#define list_size(l) (l->num_nodes)
+
 typedef bool (*compare)(void*, void*);
 
 typedef bool (*deleter)(void*);
@@ -20,8 +22,6 @@ typedef bool (*deleter)(void*);
 List *createList();
 
 void deleteList(List**, deleter);
-
-int list_size(List*);
 
 void *getElement(List*, int);
 

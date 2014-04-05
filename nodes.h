@@ -1,6 +1,8 @@
 #ifndef _nodes_h_
 #define _nodes_h_
 
+#define MAX_TOKEN_LEN 128
+
 typedef enum NodeTag
 {
 	T_INT_CONST,
@@ -51,8 +53,8 @@ typedef struct syntax_error {
 } SyntaxErrNode;
 
 
-IntNode *makeIntNode(int);
-FltNode *makeFltNode(float);
+IntNode *makeIntNode(const char*);
+FltNode *makeFltNode(const char*);
 IdentNode *makeIdentNode(const char*);
 ExprNode *makeExprNode(char, Node*, Node*);
 AssignNode *makeAssignNode(IdentNode*, Node*);

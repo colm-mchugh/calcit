@@ -85,14 +85,10 @@ Context *createContext() {
 	return new_context;
 }
 
-bool is_assign_stmt(Context *ctx) {
-	return (list_size(ctx->parse_tree) == 1) &&
-		((Node*)getElement(ctx->parse_tree, 0))->type == T_ASSIGN;
-}
+#define zero_errors(ctx) (list_size(ctx->errors) == 0)
 
-bool zero_errors(Context* ctx) {
-	return (list_size(ctx->errors) == 0);
-}
+#define is_assign_stmt(ctx) ((list_size(ctx->parse_tree) == 1) && \
+		((Node*)getElement(ctx->parse_tree, 0))->type == T_ASSIGN)
 
 void cleanUpContext(Context* ctx) {
 	// Delete parse_tree memory. Don't delete assign nodes because they are in symbol table

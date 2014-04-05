@@ -72,6 +72,8 @@ expr	:	expr T_PLUS expr
 		| 	T_IDENTIFIER
 			{ $$ = (Node*)makeIdentNode($1); }
 		|	number 
+		|	T_MINUS expr
+			{ $$ = (Node*)makeExprNode('*', (Node*)makeIntNode("-1"), (Node*)$2); }
 		;
 
 number	: T_INT 

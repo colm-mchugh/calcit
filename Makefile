@@ -1,4 +1,4 @@
-target := parser
+target := expr_eval
 C_SRCS := parser.cpp nodes.cpp list.cpp main.cpp tokens.cpp analyzer.cpp context.cpp hashtable.cpp read_line.cpp parser_wrapper.cpp evaluater.cpp shell.cpp
 C_OBJS := ${C_SRCS:.cpp=.o}
 C_FLAGS := -ggdb

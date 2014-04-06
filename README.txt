@@ -6,10 +6,10 @@ calcit - A simple command line interpreter for calculator expressions
 
    Note: built and tested on ubuntu 12.04.
 
-2) About: 'calcit' is a simple command line interpreter for evaluating calculator 
-expressions. You can enter any arbitrary arithmetic expression involving the 
-operators '+', '-', '*' and '/'. An expression can be saved in a variable and 
-used later:
+2) About: 'calcit' is a simple command line interpreter for evaluating 
+calculator expressions. You can enter any arbitrary arithmetic expression 
+involving the operators '+', '-', '*' and '/'. An expression can be saved 
+in a variable and used later:
 
    > pi := 3.141
    3.141000
@@ -34,19 +34,19 @@ used later:
 
 3) Code details:
    
-The shell (shell.cpp) is the driver; it waits for input and then processes input 
-using the following modules:
+The shell (shell.cpp) is the driver; it waits for input and then processes 
+input using the following modules:
 
 (1) parser (parser_wrapper.h, parser.y, tokens.l)
 	Input: text string
 	Output: node tree (node.h)
 (2) analyzer (analyzer.h)
 	Input: node tree
-	Output: analyzed node tree and updated symbol table, or list of errors
+	Output: node tree and updated symbol table, or list of errors
 (3) evaluater (evaluater.h)
 	Input: analyzed node tree
 	Output: evaluated expression (ExprValue in context.h). 
-A context object (context.h) is used to hold state for processing input (node tree, 
-symbol table, evaluation functions, error list).
+A context object (context.h) is used to hold state for processing input 
+(node tree, symbol table, evaluation functions, error list).
 	
 

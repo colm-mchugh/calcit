@@ -1,15 +1,17 @@
 calcit - A simple command line interpreter for calculator expressions
 
-1) To build and run: type make at the command-line, followed by ./calcit :
+1) To build and run: type make at the command-line, followed by ./calcit
    $ make
    $ ./calcit
 
-   Note: built and tested on ubuntu 12.04.
+   Note: Written in C using some C++ features. 
+   Built and tested on ubuntu 12.04. 
+   (GNU g++ 4.8.2, GNU bison 2.5, flex 2.5.35, GNU make 3.81)
 
 2) About: 'calcit' is a simple command line interpreter for evaluating 
 calculator expressions. You can enter any arbitrary arithmetic expression 
-involving the operators '+', '-', '*' and '/'. An expression can be saved 
-in a variable and used later:
+using the operators '+', '-', '*' and '/'. An expression can be saved in 
+a variable and used later:
 
    > pi := 3.141
    3.141000
@@ -34,8 +36,8 @@ in a variable and used later:
 
 3) Code details:
    
-The shell (shell.cpp) is the driver; it waits for input and then processes 
-input using the following modules:
+The shell (shell.cpp) is the driver; it waits for input and then  
+processes it using the following modules:
 
 (1) parser (parser_wrapper.h, parser.y, tokens.l)
 	Input: text string

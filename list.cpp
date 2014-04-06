@@ -17,8 +17,8 @@ ListNode *createListNode(void *data) {
 	return new_node;
 }
 
+// free memory allocated for the List
 void deleteList(List** list_ptr, deleter delete_fn ) {
-	// free memory allocated for the List
 	if ((list_ptr != NULL) && (*list_ptr != NULL)) {
 		List *list = *list_ptr;
 		ListNode *node = list->head;
@@ -89,6 +89,7 @@ void *getMatch(List *list, compare comp_op, void *data) {
 
 void *unlinkElement(List *list, ListNode *element);
 
+// Remove first node that contains the given data 
 void *removeIfExists(List* list, void* data) {
 	ListNode *element = list->head;
 	while ((element != NULL) && (element->data != data)) {
@@ -116,6 +117,7 @@ void *removeElement(List *list, int index) {
 	return data;
 }
 
+// remove the given ListNode from the list
 void *unlinkElement(List *list, ListNode *element) {
 	if (element->prev == NULL) {
 		list->head = element->next;

@@ -5,6 +5,7 @@
 
 extern int yyparse (yyscan_t scanner, void *parse_tree_ptr);
 
+// Wraps the details of invoking bison/flex
 List *parse_str(char *str)
 {
 	yyscan_t scanner;

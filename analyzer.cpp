@@ -9,6 +9,8 @@ void analyzeExprNode(ExprNode *node, Context *ctx) {
 	analyzeNode(node->right, ctx);
 }
 
+// compare_fn - this is used for finding the assignment node for an 
+// identifier in the symbol table
 bool compare_fn(void *arg1, void *arg2) {
 	AssignNode *node = (AssignNode*)arg1;
 	char *key = (char*)arg2;
@@ -17,6 +19,7 @@ bool compare_fn(void *arg1, void *arg2) {
 
 void analyzeAssignNode(AssignNode *node, Context *ctx) {
 	compare cf = compare_fn;
+	// There may be an assignment with the same identifier:
 	AssignNode *an = (AssignNode*)lookup(ctx->symbol_table, node->target->identifier, cf);
 	// Analyze the RHS of the assignment:
 	int error_count = list_size(ctx->errors);
@@ -24,7 +27,8 @@ void analyzeAssignNode(AssignNode *node, Context *ctx) {
 		analyzeNode(node->value, ctx);
 	}
 	if (list_size(ctx->errors) == error_count) {
-		// If there are no errors from analyze of RHS, remove existing assignment and add new assignment 
+		// If there are no errors from analyze of RHS, 
+		// remove the existing assignment if applicable, and add new assignment 
 		if (an != NULL) { 
 			remove(ctx->symbol_table, node->target->identifier, an);
 			deleteNode((Node*)an);
@@ -33,13 +37,13 @@ void analyzeAssignNode(AssignNode *node, Context *ctx) {
 	}
 }
 
-
+// Identifier nodes should be in the symbol table; if not, add an error
 void analyzeIdentNode(IdentNode *node, Context *ctx) {
 	AssignNode *an = (AssignNode*)lookup(ctx->symbol_table, node->identifier, compare_fn);
 	if (an == NULL) {
 		prependTo(ctx->errors, makeError(NO_SUCH_IDENT, node->identifier));
 	} else {
-		// TODO: it may not be necessary to resolve ident every time.
+		// Attach the identifier to it's assignment:
 		node->declaration = (Node*)an;
 	}
 }

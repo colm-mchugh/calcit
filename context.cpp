@@ -3,15 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
-static const char *error_message_table[] = { "No such variable", "Incorrect syntax" };
 
-ErrorMessage *makeError(ErrorTag error_tag, char* data) {
-	ErrorMessage *em = (ErrorMessage*)malloc(sizeof(ErrorMessage));
-	em->error_tag = error_tag;
-	sprintf(em->message, "%s: %s", error_message_table[error_tag], data);
-	return em;
-}
-
+// Set of operations for evaluating expressions:
 int iadd(int x, int y) { 
 	return x + y; 
 }
@@ -44,6 +37,7 @@ float fmul(float x, float y) {
 	return x * y; 
 }
 
+// Create and initialize EvalOps table
 EvalOps *createEvalOps() {
 	EvalOps *eval_ops = (EvalOps*)malloc(sizeof(EvalOps));
 	eval_ops->iops['+'] = iadd;
@@ -57,6 +51,9 @@ EvalOps *createEvalOps() {
 	return eval_ops;
 }
 
+// Given a context, two expression values and an opcode (one of '+', '-', '*', '/'),
+// first determine the type of the result (float or int) and then use the context's
+// ops table to find the correct flop or iop to evaluate a result.
 ExprValue doEval(Context *ctx, ExprValue l, ExprValue r, char opcode) {
 	ExprValue result;
 	if (l.type == T_FLT_CONST || r.type == T_FLT_CONST) {
@@ -77,6 +74,7 @@ ExprValue doEval(Context *ctx, ExprValue l, ExprValue r, char opcode) {
 	return result;
 }
 
+// A context should be created for each interaction:
 Context *createContext() {
 	Context *new_context = (Context*)malloc(sizeof(Context));
 	new_context->symbol_table = createHash(DEFAULT_NUM_BUCKETS);
@@ -90,8 +88,9 @@ Context *createContext() {
 #define is_assign_stmt(ctx) ((list_size(ctx->parse_tree) == 1) && \
 		((Node*)getElement(ctx->parse_tree, 0))->type == T_ASSIGN)
 
+// cleanUpContext should be called after a line has been processed to free memory:
 void cleanUpContext(Context* ctx) {
-	// Delete parse_tree memory. Don't delete assign nodes because they are in symbol table
+	// Delete parse_tree's memory. Don't delete assign nodes because they are in symbol table
 	deleter del_fn = ((zero_errors(ctx) && is_assign_stmt(ctx)) ? NULL : genericDeleteNode);
 	deleteList(&ctx->parse_tree, del_fn);
 	// Delete error messages
@@ -100,6 +99,8 @@ void cleanUpContext(Context* ctx) {
 		free(em);
 	}
 }
+
+// deleteContext should be called when an interaction/session is ended:
 void deleteContext(Context **ctx_ptr) {
 	if ((ctx_ptr != NULL) && (*ctx_ptr != NULL)) {
 		Context *ctx = *ctx_ptr;
@@ -112,4 +113,14 @@ void deleteContext(Context **ctx_ptr) {
 	}
 }
 
+// Error message table and function - fairly limited
+static const char *error_message_table[] = { "No such variable", "Incorrect syntax" };
+
+// Create a message of the appropriate type:
+ErrorMessage *makeError(ErrorTag error_tag, char* data) {
+	ErrorMessage *em = (ErrorMessage*)malloc(sizeof(ErrorMessage));
+	em->error_tag = error_tag;
+	snprintf(em->message, MAX_ERROR_MSG_LEN, "%s: %s", error_message_table[error_tag], data);
+	return em;
+}
 

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+// Evaluater functionality - convert a node to an expression value
+
 ExprValue evaluateNode(Node*, Context*);
 
 ExprValue evaluateExprNode(ExprNode *node, Context *ctx) {
@@ -18,6 +21,8 @@ ExprValue evaluateIdentNode(IdentNode *node, Context *ctx) {
 	return result;
 }
 
+// For assignment nodes, the expression value is saved in the 
+// node so it can be referenced when the variable is used:
 ExprValue evaluateAssignNode(AssignNode *node, Context *ctx) {
 	ExprValue result = evaluateNode(node->value, ctx);
 	node->resolved_value = malloc(sizeof(ExprValue));

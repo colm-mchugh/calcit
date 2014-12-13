@@ -19,6 +19,6 @@ Incorrect syntax: syntax error
 
 (4) Usability - recognize EOF (^D) and terminate 
 
-(5) Usability - recall last line entered
+(5) Usability - recall last line entered (use GNU readline)
 
 (6) Usability - round floating point numbers

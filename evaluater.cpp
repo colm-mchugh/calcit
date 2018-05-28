@@ -52,4 +52,7 @@ ExprValue evaluateNode(Node *node, Context *ctx) {
 		case T_EXPR: return evaluateExprNode((ExprNode*)node, ctx); break;
 		case T_ASSIGN: return  evaluateAssignNode((AssignNode*)node, ctx); break;
 	}
+	ExprValue error;
+	error.type = T_SYNTAX_ERROR;
+	return error;
 }

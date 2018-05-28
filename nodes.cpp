@@ -130,6 +130,7 @@ void deleteNode(Node *node) {
 			
 bool genericDeleteNode(void *node) {
 	deleteNode((Node*)node);
+	return true;
 }
 
 // TODO Figure out best way to visit nodes
